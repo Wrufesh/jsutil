@@ -1,0 +1,25 @@
+{
+  "name": "jsutil",
+  "homepage": "https://github.com/Wrufesh/jsutil",
+  "authors": [
+    "wrufesh singh <wrufesh@gmail.com>"
+  ],
+  "description": "this is colection of javascript helper functions",
+  "main": "App.js",
+  "keywords": [
+    "jsutils"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "toastr": "^2.1.3",
+    "blockUI": "*",
+    "jquery": "^3.2.1"
+  }
+}
