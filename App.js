@@ -1,16 +1,33 @@
 /**
  * Created by wrufesh on 10/3/16.
  */
+
+// using jQuery
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 var App = (function () {
     var remotePostProcessing = function (url, data, defaultCallback, failureCallback) {
-        data['csrfmiddlewaretoken'] = $('[name = "csrfmiddlewaretoken"]').val();
         $.ajax({
             url: url,
             type: 'POST',
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8",
             beforeSend: function (xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", data['csrfmiddlewaretoken']);
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
             }
         })
             .done(defaultCallback)
@@ -19,7 +36,6 @@ var App = (function () {
 
     // Post with file data
     var remoteMultipartPostProcessing = function (url, data, defaultCallback, failureCallback) {
-        data['csrfmiddlewaretoken'] = $('[name = "csrfmiddlewaretoken"]').val();
         $.ajax({
             url: url,
             type: 'POST',
@@ -28,7 +44,27 @@ var App = (function () {
             contentType: false,
             processData: false,
             beforeSend: function (xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", data['csrfmiddlewaretoken']);
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+        })
+            .done(defaultCallback)
+            .fail(failureCallback);
+    };
+    // Post with file data end
+
+
+    // Post with file data
+    var remoteImagePostProcessing = function (url, data, defaultCallback, failureCallback) {
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: data,
+            cache: false,
+            contentType: "image/png",
+            processData: false,
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+
             }
         })
             .done(defaultCallback)
@@ -38,14 +74,13 @@ var App = (function () {
 
     // Remote patch
     var remotePatchProcessing = function (url, data, defaultCallback, failureCallback) {
-        data['csrfmiddlewaretoken'] = $('[name = "csrfmiddlewaretoken"]').val();
         $.ajax({
             url: url,
             type: 'PATCH',
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8",
             beforeSend: function (xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", data['csrfmiddlewaretoken']);
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
             }
         })
             .done(defaultCallback)
@@ -54,14 +89,13 @@ var App = (function () {
     // End Remote Patch
 
     var remotePutProcessing = function (url, data, defaultCallback, failureCallback) {
-        data['csrfmiddlewaretoken'] = $('[name = "csrfmiddlewaretoken"]').val();
         $.ajax({
             url: url,
             type: 'PUT',
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8",
             beforeSend: function (xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", data['csrfmiddlewaretoken']);
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
             }
         })
             .done(defaultCallback)
@@ -69,14 +103,13 @@ var App = (function () {
     };
 
     var remoteDeleteProcessing = function (url, data, defaultCallback, failureCallback) {
-        data['csrfmiddlewaretoken'] = $('[name = "csrfmiddlewaretoken"]').val();
         $.ajax({
             url: url,
             type: 'DELETE',
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8",
             beforeSend: function (xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", data['csrfmiddlewaretoken']);
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
             }
         })
             .done(defaultCallback)
@@ -93,6 +126,9 @@ var App = (function () {
         },
         remoteMultipartPost: function (url, data, defaultCallback, failureCallback) {
             return remoteMultipartPostProcessing(url, data, defaultCallback, failureCallback);
+        },
+        remoteMultipartImagePost: function (url, data, defaultCallback, failureCallback) {
+            return remoteImagePostProcessing(url, data, defaultCallback, failureCallback);
         },
         remotePatch: function (url, data, defaultCallback, failureCallback) {
             return remotePatchProcessing(url, data, defaultCallback, failureCallback);
@@ -178,12 +214,12 @@ var App = (function () {
             };
             ko.validation.init(validationSettings, true);
         },
-         /**
+        /**
          * Created by wrufesh on 11/24/16.
          */
-         // Dependencies:
-         //     <link rel="stylesheet" href="{% static 'hr/css/plugins/toastr/toastr.css' %}">
-         //     <script src="{% static 'hr/js/plugins/toastr/toastr.js' %}"></script>
+        // Dependencies:
+        //     <link rel="stylesheet" href="{% static 'hr/css/plugins/toastr/toastr.css' %}">
+        //     <script src="{% static 'hr/js/plugins/toastr/toastr.js' %}"></script>
         notifyUser: function (message, type, layout) {
             toastr.options = {
                 "closeButton": true,
