@@ -343,7 +343,7 @@ function Pagination(paginate, data) {
                     err_message,
                     'error'
                 );
-                App.hideProcessing();
+                App.hideProcessing()
             }
         );
     }
